@@ -1,5 +1,7 @@
 # Graphical Convex Hull
 
+<img src="https://user-images.githubusercontent.com/108101472/209432341-03ef88e1-8a1d-4d04-997c-4ac1a1a24c12.png" width="400">
+
 This program generates 25 random points on a canvas element and displays them using WebGL. It then determines the points on the convex hull of the set of points and displays those as well.
 
 # Getting Started
