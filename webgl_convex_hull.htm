@@ -1,0 +1,117 @@
+
+<!doctype html>
+<html>
+	<body>
+		<canvas width = "700" height = "700" id = "my_Canvas"></canvas>
+		<script>
+			// Create the canvas
+			var canvas = document.getElementById('my_Canvas');
+			gl = canvas.getContext('experimental-webgl');
+
+			// Define and store the geometry
+			// Create array of 25 random vertices
+			var vertices = [];
+			for(var i = 0; i < 25; i++)
+			{
+				var x = Math.random() * (0.85 + 0.85) - 0.85;
+				var y = Math.random() * (0.85 + 0.85) - 0.85;
+				vertices.push(x, y);
+			}
+
+			// Create and set the buffer
+			var vertex_buffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+			gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+			// Create and implement shaders
+			var vertCode =
+				'attribute vec3 coordinates;' +
+				'void main(void) {' +
+					'gl_Position = vec4(coordinates, 1.0);' +
+					'gl_PointSize = 10.0;' +
+				'}';
+			var vertShader = gl.createShader(gl.VERTEX_SHADER);
+			gl.shaderSource(vertShader, vertCode);
+			gl.compileShader(vertShader);
+
+			var fragCode =
+				'void main(void) {' +
+					'gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);' +
+				'}';
+			var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+			gl.shaderSource(fragShader, fragCode);
+			gl.compileShader(fragShader);
+
+			var shaderProgram = gl.createProgram();
+			gl.attachShader(shaderProgram, vertShader);
+			gl.attachShader(shaderProgram, fragShader);
+			gl.linkProgram(shaderProgram);
+			gl.useProgram(shaderProgram);
+
+			// Associate shaders to buffer objects
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+
+			var coord = gl.getAttribLocation(shaderProgram, "coordinates");
+			gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
+			gl.enableVertexAttribArray(coord);
+
+			// Draw the points
+			gl.clearColor(0.0, 0.0, 0.0, 0.0);
+			gl.enable(gl.DEPTH_TEST);
+			gl.clear(gl.COLOR_BUFFER_BIT);
+			gl.viewport(0, 0, canvas.width, canvas.height);
+
+			gl.drawArrays(gl.POINTS, 0, vertices.length / 2);
+
+			// Convert the vertices array to a 2D array
+			const twoDVertices = [];
+			while(vertices.length)
+			{
+				twoDVertices.push(vertices.splice(0, 2));
+			}
+
+			// Sort the 2D array by x value
+			const sortedVertices = twoDVertices.sort(function(a, b) {return a[0] - b[0]});
+
+			// Determine the points on the hull
+			/* Determine if point c is to the left of the line made by the point at
+			the index of hull and the endpoint */
+			function isLeft(a, b, c)
+			{
+				return ((b[0] - a[0]) * (c[1] - a[1]) - (b[1] -a[1]) * (c[0] - a[0]) > 0);
+			}
+
+			var hull2D = [];
+			var leftMostPoint = sortedVertices[0];
+			var i = 0;
+			var endpoint = [];
+			while(endpoint != hull2D[0])
+			{
+				hull2D[i] = leftMostPoint;
+				endpoint = sortedVertices[0];
+				for(var j = 1; j < sortedVertices.length; j++)
+				{
+					if(endpoint == leftMostPoint || isLeft(hull2D[i], endpoint, sortedVertices[j]) > 0)
+					{
+						endpoint = sortedVertices[j];
+					}
+				}
+				i += 1;
+				leftMostPoint = endpoint;
+			}
+
+			// Convert 2D array to one dimensional array
+			var hull = [];
+			for(var i = 0; i < hull2D.length; i++)
+			{
+				hull = hull.concat(hull2D[i]);
+			}
+
+			// Display the lines
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(hull), gl.STATIC_DRAW);
+			gl.drawArrays(gl.LINE_LOOP, 0, hull.length /2);
+
+		</script>
+	</body>
+</html>
