@@ -1,3 +1,19 @@
 # Graphical Convex Hull
 
-The graphical convex hull uses WebGL, JavaScript, and HTML to render a convex hull. Random vertices are generated to create points, which are then rendered. The points are then sorted by their x values. Now that the left-most point can be determined, an algorithm is used to determine the next left-most point. This process iterates until the next left-most point is the original left-most point. The values of each left-most point are then used to render lines, creating the convex hull.
+This program generates 25 random points on a canvas element and displays them using WebGL. It then determines the points on the convex hull of the set of points and displays those as well.
+
+# Getting Started
+
+To run the program, simply open the index.html file in a web browser that supports WebGL. The points will be displayed on the canvas element, and the points on the convex hull will be displayed in red.
+Dependencies
+
+Note: This program requires a web browser with support for WebGL.
+
+# Files
+
+* index.html - HTML file containing the canvas element and script for the program
+* style.css - CSS file for styling the canvas element
+
+# Credits
+
+This program was created using the WebGL API. The algorithm for determining the points on the convex hull is based on the gift wrapping algorithm.
