@@ -1,4 +1,4 @@
-# Graphical Convex Hull
+# Gift-Wrapping Algorithm
 
 <img src="https://user-images.githubusercontent.com/108101472/209432341-03ef88e1-8a1d-4d04-997c-4ac1a1a24c12.png" width="400">
 
